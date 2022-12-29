@@ -13,6 +13,7 @@ player_speed = 8
 bullet_Speed = 12
 anim_fr = 12  # animation frame rate
 FPS = 60
+bgm_vol = 0.25
 
 # Directions +X -Y
 LEFT = Vector2(-1, 0)
@@ -398,6 +399,7 @@ def tintRed(surf):
 
 
 enemies = []
+lastPressed = []
 enemySpawnTime = 2 / (difficulty + 1)
 enemySpawnTimer = 0
 enemy_projectiles = []
@@ -407,6 +409,8 @@ powerups = []
 powerUpTimer = 0
 
 gameOver = False
+pressingMute = False
+muteAudio = False
 
 # HUD
 fpsText = font.render(str(int(clock.get_fps())), True, WHITE)
@@ -414,6 +418,7 @@ scoreText = font.render(str(player.score), True, WHITE)
 healthText = font.render('HP:' + str(player.hp), True, WHITE)
 gameOverText = font.render('Game Over', True, WHITE)
 
+pg.mixer_music.set_volume(bgm_vol)
 pg.mixer_music.play(-1) # plays bgm
 while True:
     screen.fill(CORNFLOWER_BLUE)  # clear screen
@@ -454,6 +459,14 @@ while True:
             gameOver = True
 
     player.update()
+    
+    if pressed_keys[K_m]:
+        if not pressingMute:
+            muteAudio = not muteAudio
+            if muteAudio:
+                pg.mixer_music.set_volume(bgm_vol)
+            else:
+                pg.mixer_music.set_volume(0)
 
     if pressed_keys[K_ESCAPE]:
         pg.quit()
@@ -571,8 +584,9 @@ while True:
         screen.blit(gameOverText, (
         int(gameWidth * 0.5 - gameOverText.get_width() / 2), int(gameHeight * 0.5 - gameOverText.get_height() / 2)))
 
-    pg.display.update((0, 0, gameWidth, gameHeight))
+    pressingMute = pressed_keys[K_m]
 
+    pg.display.update((0, 0, gameWidth, gameHeight))    
     # Debug Info
     # print(self.pos)
     # print(projectiles)
