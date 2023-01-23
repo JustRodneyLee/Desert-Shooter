@@ -430,8 +430,6 @@ while True:
 
     clock.tick(FPS)
     pressed_keys = pg.key.get_pressed()
-    # difficulty change
-    difficulty += 0.1 / FPS
 
     if gameOver:
         flashTimer += 1 / FPS
@@ -446,6 +444,8 @@ while True:
 
     # Check for game over conditions
     if not gameOver:
+        # difficulty change
+        difficulty += 0.1 / FPS
         if player.hp == 0:
             fly_Speed = 60
             gameOver = True
@@ -490,13 +490,14 @@ while True:
         if enemy.died:
             enemies.remove(enemy)
         else:
-            if enemy.pos.y >= gameHeight and not gameOver:
-                if enemy.type == 'enemy_big':
-                    player.score -= 500
-                elif enemy.type == 'enemy_medium':
-                    player.score -= 250
-                elif enemy.type == 'enemy_small':
-                    player.score -= 100
+            if enemy.pos.y >= gameHeight:
+                if not gameOver:
+                    if enemy.type == 'enemy_big':
+                        player.score -= 500
+                    elif enemy.type == 'enemy_medium':
+                        player.score -= 250
+                    elif enemy.type == 'enemy_small':
+                        player.score -= 100
                 enemies.remove(enemy)
                 pass
             if not player.died:
@@ -524,7 +525,7 @@ while True:
     # Projectile Update
     for projectile in enemy_projectiles:
         projectile.update()
-        if projectile.pos.y <= -20 or projectile.pos.x <= -20 or projectile.pos.x >= gameWidth + 20:  # clipping out projectiles
+        if projectile.pos.y <= -20 or projectile.pos.y >= gameHeight or projectile.pos.x <= -20 or projectile.pos.x >= gameWidth + 20:  # clipping out projectiles
             enemy_projectiles.remove(projectile)
         if projectile.collision.colliderect(player.rect):
             player.get_hurt()
@@ -589,5 +590,3 @@ while True:
     pg.display.update((0, 0, gameWidth, gameHeight))    
     # Debug Info
     # print(self.pos)
-    # print(projectiles)
-    # print(enemies)
